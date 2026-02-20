@@ -1,0 +1,96 @@
+{
+  "name": "n8n.weather",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "id": "62faa9d0-1261-48eb-b77a-70867fecd0dc",
+      "name": "Telegram Trigger",
+      "webhookId": "4e8fbbf4-9a28-4e4f-84c2-1f5b89705ba0"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{$json[\"message\"][\"text\"]}}"
+            },
+            {
+              "name": "appid",
+              "value": "YOUR_OPENWEATHER_API_KEY"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [208, 0],
+      "id": "337badc1-4291-4d7c-b413-2584788b3781",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+        "text": "=Weather: {{$node[\"HTTP Request\"].json[\"weather\"][0][\"description\"]}}\nTemp: {{$node[\"HTTP Request\"].json[\"main\"][\"temp\"]}}°C\nHumidity: {{$node[\"HTTP Request\"].json[\"main\"][\"humidity\"]}}%",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [416, 0],
+      "id": "8d255079-9628-423c-bf23-ac0e142930a5",
+      "name": "Send a text message",
+      "webhookId": "d1f8eaa4-5fa0-48c4-b176-273a159b2775"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7c504227-374f-46b1-b369-bbbdab3dc26d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cdf01fe6ef1be49d73e05a003b64dffe61e457620d30982111de1edfb717ec6d"
+  },
+  "id": "zdEFMcNJSB6qIOF7",
+  "tags": []
+}
